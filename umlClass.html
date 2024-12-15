@@ -253,7 +253,13 @@
           $("Button",
             {
               actionMove: dragNewNode,  // defined below, to support dragging from the button
-              _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              // _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              _dragData : {
+                            key: 6,
+                            name: "newClass",
+                            properties: [{ name: "attr", type: "type", visibility: "public" }],
+                            methods: [{ name: "Method", parameters: [{ name: "namePar", type: "typePar" }], visibility: "private"}]
+                          },
               click: clickNewNode,  // defined below, to support a click on the button
               _linkType: "association",
               toolTip: 
@@ -270,7 +276,13 @@
           $("Button",
             {
               actionMove: dragNewNode,  // defined below, to support dragging from the button
-              _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              // _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              _dragData : {
+                            key: 6,
+                            name: "newClass",
+                            properties: [{ name: "attr", type: "type", visibility: "public" }],
+                            methods: [{ name: "Method", parameters: [{ name: "namePar", type: "typePar" }], visibility: "private"}]
+                          },
               click: clickNewNode,  // defined below, to support a click on the button
               _linkType: "generalization" ,
               toolTip: 
@@ -287,7 +299,13 @@
           $("Button",
             {
               actionMove: dragNewNode,  // defined below, to support dragging from the button
-              _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              // _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              _dragData : {
+                            key: 6,
+                            name: "newClass",
+                            properties: [{ name: "attr", type: "type", visibility: "public" }],
+                            methods: [{ name: "Method", parameters: [{ name: "namePar", type: "typePar" }], visibility: "private"}]
+                          },
               click: clickNewNode,  // defined below, to support a click on the button
               _linkType: "aggregation" ,
               toolTip: 
@@ -303,7 +321,14 @@
           //7
           $("Button",
             {
-              _dragData: { key: 2, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              // _dragData: { key: 2, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              _dragData : {
+                            key: 2,
+                            name: "newClass",
+                            properties: [{ name: "attr", type: "type", visibility: "public" }],
+                            methods: [{ name: "Method", parameters: [{ name: "namePar", type: "typePar" }], visibility: "private"}]
+                          },
+
               click: clickNewNodeWithoutLink,
               toolTip: 
                 $(go.Adornment, "Auto",
@@ -318,27 +343,6 @@
         )
       );
 
-            //////////////////////////////
-            //JSON EXP
-            ////////////////////////////////
-            function simpleStringify(object) {
-            const simpleObject = {};
-            for (const prop in object) {
-                if (!object.hasOwnProperty(prop)) {
-                    continue;
-                }
-                if (typeof(object[prop]) == 'object') {
-                    continue;
-                }
-                if (typeof(object[prop]) == 'function') {
-                    continue;
-                }
-                simpleObject[prop] = object[prop];
-            }
-            return JSON.stringify(simpleObject);
-          }
-
-
       function drawLink(e, button) {
         var node = button.part.adornedPart;
         var tool = e.diagram.toolManager.linkingTool;   
@@ -349,13 +353,10 @@
         //button.diagram.model.addLinkData({"from": 2, "to": 1}, "relationship", button._linkType); 
         e.diagram.addDiagramListener("LinkDrawn", 
           function(evt) {
-            //console.log("Link desenhado! " + evt); 
-            console.log(evt.subject.ub);
-            // var from = evt.subject.ge.from;
-            // var to = evt.subject.ge.to;
-
-            var from = evt.subject.ub.from;
-            var to = evt.subject.ub.to;
+            //console.log(evt.subject);
+            // printObject(evt.subject)
+            var from = evt.subject.ii.from;
+            var to = evt.subject.ii.to; 
 
             var linkdata = e.diagram.model.copyLinkData({});
             
@@ -369,32 +370,24 @@
          });       
       }
 
-          function printObject(o) {
-              var out = '';
-              for (var p in o) {
-                out += p + ': ' + o[p] + '\n';
-              }
-              console.log(out);
-            }
+      // NEVER USED
+      //  function onLinkChanged(ev) {  // handle insertions
+      //     if (ev.model.skipsUndoManager) return;
+      //     if (ev.change === go.ChangedEvent.Insert) {
+      //       console.log("EVENT: " + ev);
+      //       if (ev.propertyName === "nodeDataArray") {
 
-
- function onLinkChanged(ev) {  // handle insertions
-    if (ev.model.skipsUndoManager) return;
-    if (ev.change === go.ChangedEvent.Insert) {
-      console.log("EVENT: " + ev);
-      if (ev.propertyName === "nodeDataArray") {
-
-      } else if (ev.propertyName === "linkDataArray") {
-        console.log("From: " + ev.newValue.from + ", To: " + ev.newValue.to + ", Model: " + ev.model);
-        var linkdata = ev.model.copyLinkData({});
-        //var dataNCode = {from: + e.newValue.from + , to: +e.newValue.to +};
-        ev.model.setDataProperty({from:2, to:1}, "relationship", linktype);        
-        //e.model.setFromKeyForLinkData(linkdata, e.model.getKeyForNodeData(e.newValue.from.data));
-        //e.model.setToKeyForLinkData(linkdata, e.model.getKeyForNodeData(e.newValue.to.data));
-        return ev.model.addLinkData(linkdata);   
-      }
-    }
-  } 
+      //       } else if (ev.propertyName === "linkDataArray") {
+      //         console.log("From: " + ev.newValue.from + ", To: " + ev.newValue.to + ", Model: " + ev.model);
+      //         var linkdata = ev.model.copyLinkData({});
+      //         //var dataNCode = {from: + e.newValue.from + , to: +e.newValue.to +};
+      //         ev.model.setDataProperty({from:2, to:1}, "relationship", linktype);        
+      //         //e.model.setFromKeyForLinkData(linkdata, e.model.getKeyForNodeData(e.newValue.from.data));
+      //         //e.model.setToKeyForLinkData(linkdata, e.model.getKeyForNodeData(e.newValue.to.data));
+      //         return ev.model.addLinkData(linkdata);   
+      //       }
+      //     }
+      //   } 
 
       function drawLink1(e, button) {
         var adorn = button.part;
@@ -421,7 +414,7 @@
       }
 
 
-////////////PFV PFV  ???????????????????????????????????????
+      //NEVER USED
       function addLink (fromnode, typeRelationship, tool) {            
         var diagram = fromnode.diagram;
         var model = diagram.model;
@@ -432,8 +425,7 @@
         model.setToKeyForLinkData(linkdata, model.getKeyForNodeData(tonode.data));
         model.addLinkData(linkdata);         
       }
-/////////////////////////////???????????????????????????????????????????????
-    
+      
     // used by both clickNewNode and dragNewNode to create a node and a link from a given node to the new node
     function createNodeAndLink(data, fromnode, relationship) {
       var diagram = fromnode.diagram;
@@ -582,7 +574,7 @@
   </div>    
  
 
-<!--
+<!-- 
   <div id="Sucesso" class="container">
     <div class="alert alert-success fade in">
       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
