@@ -23,23 +23,12 @@
     myDiagram = $(go.Diagram, "myDiagramDiv",
         {
           initialContentAlignment: go.Spot.Center,
-          "linkingTool.isEnabled": false,  //invoked explicitly by drawLink function, below
-          "linkingTool.direction": go.LinkingTool.ForwardsOnly,  //only draw "from" towards "to"
+          "linkingTool.isEnabled": false,  
+          "linkingTool.direction": go.LinkingTool.ForwardsOnly,  
           "undoManager.isEnabled": true,
 
-          //comentar o layout permite add classes fora do padrão da "linha horizontal"
-          /*layout: $(go.TreeLayout,
-                    { // this only lays out in trees nodes connected by "generalization" links
-                      angle: 90,
-                      path: go.TreeLayout.PathSource,  // links go from child to parent
-                      setsPortSpot: false,  // keep Spot.AllSides for link connection spot
-                      setsChildPortSpot: false,  // keep Spot.AllSides
-                      // nodes not connected by "generalization" links are laid out horizontally
-                      arrangement: go.TreeLayout.ArrangementHorizontal
-                    }) */
         });
 
-    // show visibility or access as a single character at the beginning of each property or method
     function convertVisibility(v) {
       switch (v) {
         case "public": return "+";
@@ -50,45 +39,43 @@
       }
     }
 
-    // the item template for PROPERTIES
     var propertyTemplate =
       $(go.Panel, "Horizontal",
-        // property visibility/access
+
         $(go.TextBlock,
           { isMultiline: false, editable: true, width: 12 },
           new go.Binding("text", "visibility", convertVisibility)),
-        // property name, underlined if scope=="class" to indicate static property
+
         $(go.TextBlock,
           { isMultiline: false, editable: true },
           new go.Binding("text", "name").makeTwoWay(),
           new go.Binding("isUnderline", "scope", function(s) { return s[0] === 'c' })),
-        // property type, if known
+
         $(go.TextBlock, "",
           new go.Binding("text", "type", function(t) { return (t ? ": " : ""); })),
         $(go.TextBlock,
           { isMultiline: false, editable: true },
           new go.Binding("text", "type").makeTwoWay()),
-        // property default value, if any
+
         $(go.TextBlock,
           { isMultiline: false, editable: false },
           new go.Binding("text", "default", function(s) { return s ? " = " + s : ""; }))
       );
 
-    // the item template for METHODS
     var methodTemplate =
       $(go.Panel, "Horizontal",
-        // method visibility/access
+
         $(go.TextBlock,
           { isMultiline: false, editable: true, width: 12 },
           new go.Binding("text", "visibility", convertVisibility)),
-        // method name, underlined if scope=="class" to indicate static method
+
         $(go.TextBlock,
           { isMultiline: false, editable: true },
           new go.Binding("text", "name").makeTwoWay(),
           new go.Binding("isUnderline", "scope", function(s) { return s[0] === 'c' })),
-        // method parameters
+
         $(go.TextBlock, "()", { editable: true },
-          // this does not permit adding/editing/removing of parameters via inplace edits
+
           new go.Binding("text", "parameters", function(parr) {
               var s = "(";
               for (var i = 0; i < parr.length; i++) {
@@ -98,7 +85,7 @@
               }
               return s + ")";
           })),
-        // method return type, if any
+
         $(go.TextBlock, "",
           new go.Binding("text", "type", function(t) { return (t ? ": " : ""); })),
         $(go.TextBlock,
@@ -109,9 +96,7 @@
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
         {
-          // rearrange the link points evenly along the sides of the nodes as links are
-          // drawn or reconnected -- these event handlers only make sense when the fromSpot
-          // and toSpot are Spot.xxxSides          
+
           linkConnected: function(node, link, port) {
             if (link.fromNode !== null) 
               link.fromNode.invalidateConnectedLinks();            
@@ -124,19 +109,15 @@
             if (link.toNode !== null) 
               link.toNode.invalidateConnectedLinks();
           }, 
-          locationSpot: go.Spot.Center//,
-         // fromSpot: go.Spot.AllSides,
-         // toSpot: go.Spot.AllSides
+          locationSpot: go.Spot.Center
+
         },
-        //new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+
         $(go.Shape, 
           { 
             fill: "lightyellow", 
             portId: "",
-            // use the following property if you want users to draw new links
-            // interactively by dragging from the Shape, and re-enable the LinkingTool
-            // in the initialization of the Diagram
-            //cursor: "pointer",
+
             fromSpot: go.Spot.AllSides, fromLinkable: true,
             fromLinkableDuplicates: true, fromLinkableSelfNode: true,
             toSpot: go.Spot.AllSides, toLinkable: true,
@@ -145,7 +126,7 @@
         ),
         $(go.Panel, "Table",
           { defaultRowSeparatorStroke: "black"},
-          // header
+
           $(go.TextBlock,
             {
               row: 0, columnSpan: 2, margin: 3, alignment: go.Spot.Center,
@@ -154,7 +135,7 @@
             },
             new go.Binding("text", "name").makeTwoWay()
           ),
-          // Properties
+
           $(go.TextBlock, "Attributes",
             { row: 1, font: "italic 10pt sans-serif" },
             new go.Binding("visible", "visible", function(v) { return !v; }).ofObject("PROPERTIES")
@@ -171,7 +152,7 @@
             { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
             new go.Binding("visible", "properties", function(arr) { return arr.length > 0; })
           ),
-          // Methods
+
           $(go.TextBlock, "Methods",
             { row: 2, font: "italic 10pt sans-serif" },
             new go.Binding("visible", "visible", function(v) { return !v; }).ofObject("METHODS")
@@ -190,8 +171,6 @@
         )
       );
 
-  //add buttons -- PFV
-    // a selected node shows an Adornment that includes both a blue border and a row of Buttons above the node
     myDiagram.nodeTemplate.selectionAdornmentTemplate =
       $(go.Adornment, "Spot",
         $(go.Panel, "Auto",
@@ -200,13 +179,13 @@
         ),
         $(go.Panel, "Horizontal",
           { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom },
-          //1
+
           $("Button",
             {
-              // drawLink is defined below, to support interactively drawing new links
-              click: drawLink,  // click on Button and then click on target node
-              _linkType: "association", // node data to copy
-              actionMove: drawLink,  // drag from Button to the target node
+
+              click: drawLink,  
+              _linkType: "association", 
+              actionMove: drawLink,  
               toolTip: 
                 $(go.Adornment, "Auto",
                   $(go.Shape, { fill: "lightgreen" }),
@@ -216,12 +195,12 @@
             $(go.Shape, 
               { geometryString: "M0 0 L8 0 8 10 14 10" }, { width: 18, height: 18})
           ),
-          //2
+
           $("Button",
-            { // drawLink is defined below, to support interactively drawing new links
-              click: drawLink,  // click on Button and then click on target node
-              _linkType: "generalization", // node data to copy
-              actionMove: drawLink,  // drag from Button to the target node
+            { 
+              click: drawLink,  
+              _linkType: "generalization", 
+              actionMove: drawLink,  
               toolTip: 
                 $(go.Adornment, "Auto",
                   $(go.Shape, { fill: "lightgreen" }),
@@ -232,13 +211,13 @@
             $(go.Shape,
               { geometryString: "M0 0 L8 0 8 12 14 12 M12 10 L14 12 12 14"}, { width: 18, height: 18})
           ),
-          //3
+
           $("Button",
             {
-              // drawLink is defined below, to support interactively drawing new links
-              click: drawLink,  // click on Button and then click on target node
-              _linkType: "aggregation", // node data to copy
-              actionMove: drawLink,  // drag from Button to the target node
+
+              click: drawLink,  
+              _linkType: "aggregation", 
+              actionMove: drawLink,  
               toolTip: 
                 $(go.Adornment, "Auto",
                   $(go.Shape, { fill: "lightgreen" }),
@@ -249,18 +228,18 @@
             $(go.Shape, 
               { geometryString: "M0 0 L8 0 8 12 10 12 12 10 14 12 12 14 10 12"}, { width: 18, height: 18})
           ), 
-          //4
+
           $("Button",
             {
-              actionMove: dragNewNode,  // defined below, to support dragging from the button
-              // _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              actionMove: dragNewNode,  
+
               _dragData : {
                             key: 6,
                             name: "newClass",
                             properties: [{ name: "attr", type: "type", visibility: "public" }],
                             methods: [{ name: "Method", parameters: [{ name: "namePar", type: "typePar" }], visibility: "private"}]
                           },
-              click: clickNewNode,  // defined below, to support a click on the button
+              click: clickNewNode,  
               _linkType: "association",
               toolTip: 
                 $(go.Adornment, "Auto",
@@ -272,18 +251,18 @@
             $(go.Shape,
               { geometryString: "M0 10 L6 10 x F1 M6 6 L14 6 14 13 6 13z M6 8 L14 8", fill: "lightyellow"}, { width: 22, height: 18})
           ),     
-          //5
+
           $("Button",
             {
-              actionMove: dragNewNode,  // defined below, to support dragging from the button
-              // _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              actionMove: dragNewNode,  
+
               _dragData : {
                             key: 6,
                             name: "newClass",
                             properties: [{ name: "attr", type: "type", visibility: "public" }],
                             methods: [{ name: "Method", parameters: [{ name: "namePar", type: "typePar" }], visibility: "private"}]
                           },
-              click: clickNewNode,  // defined below, to support a click on the button
+              click: clickNewNode,  
               _linkType: "generalization" ,
               toolTip: 
                 $(go.Adornment, "Auto",
@@ -295,18 +274,18 @@
             $(go.Shape,
               { geometryString: "M0 10 L5 10 3 9 M5 10 L3 11 x F1 M6 6 L14 6 14 13 6 13z M6 8 L14 8", fill: "lightyellow"}, { width: 22, height: 18})
           ),     
-          //6
+
           $("Button",
             {
-              actionMove: dragNewNode,  // defined below, to support dragging from the button
-              // _dragData: { key: 6, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+              actionMove: dragNewNode,  
+
               _dragData : {
                             key: 6,
                             name: "newClass",
                             properties: [{ name: "attr", type: "type", visibility: "public" }],
                             methods: [{ name: "Method", parameters: [{ name: "namePar", type: "typePar" }], visibility: "private"}]
                           },
-              click: clickNewNode,  // defined below, to support a click on the button
+              click: clickNewNode,  
               _linkType: "aggregation" ,
               toolTip: 
                 $(go.Adornment, "Auto",
@@ -318,10 +297,10 @@
             $(go.Shape,
               { geometryString: "M0 10 L3 10 4 9 5 10 4 11 3 10 x F1 M6 6 L14 6 14 13 6 13z M6 8 L14 8", fill: "lightyellow" }, { width: 22, height: 18})
           ),          
-          //7
+
           $("Button",
             {
-              // _dragData: { key: 2, name: "newClass", properties: [{}],  methods: [{}] },  // node data to copy
+
               _dragData : {
                             key: 2,
                             name: "newClass",
@@ -335,7 +314,7 @@
                   $(go.Shape, { fill: "lightgreen" }),
                   $(go.TextBlock, { margin: 2 },
                     "Adicionar nova classe.")
-                )   // defined below, to support a click on the button
+                )   
             },
             $(go.Shape,
               { geometryString: "F1 M0 0 L14 0 14 14 0 14z M0 4 L14 4 M4 9 L10 9 M7 6 L7 12", fill: "lightyellow"}, { width: 18, height: 18})
@@ -350,16 +329,15 @@
         tool.startObject = node.port;
         e.diagram.currentTool = tool;
         tool.doActivate();  
-        //button.diagram.model.addLinkData({"from": 2, "to": 1}, "relationship", button._linkType); 
+
         e.diagram.addDiagramListener("LinkDrawn", 
           function(evt) {
-            //console.log(evt.subject);
-            // printObject(evt.subject)
+
             var from = evt.subject.ii.from;
             var to = evt.subject.ii.to; 
 
             var linkdata = e.diagram.model.copyLinkData({});
-            
+
             var bla = e.diagram.model.linkDataArray;
             for(var i in bla){
                 if(bla[i].from==from && bla[i].to==to) {
@@ -370,63 +348,6 @@
          });       
       }
 
-      // NEVER USED
-      //  function onLinkChanged(ev) {  // handle insertions
-      //     if (ev.model.skipsUndoManager) return;
-      //     if (ev.change === go.ChangedEvent.Insert) {
-      //       console.log("EVENT: " + ev);
-      //       if (ev.propertyName === "nodeDataArray") {
-
-      //       } else if (ev.propertyName === "linkDataArray") {
-      //         console.log("From: " + ev.newValue.from + ", To: " + ev.newValue.to + ", Model: " + ev.model);
-      //         var linkdata = ev.model.copyLinkData({});
-      //         //var dataNCode = {from: + e.newValue.from + , to: +e.newValue.to +};
-      //         ev.model.setDataProperty({from:2, to:1}, "relationship", linktype);        
-      //         //e.model.setFromKeyForLinkData(linkdata, e.model.getKeyForNodeData(e.newValue.from.data));
-      //         //e.model.setToKeyForLinkData(linkdata, e.model.getKeyForNodeData(e.newValue.to.data));
-      //         return ev.model.addLinkData(linkdata);   
-      //       }
-      //     }
-      //   } 
-
-      function drawLink1(e, button) {
-        var adorn = button.part;
-        if (adorn === null) return;
-        e.handled = true;
-        var diagram = adorn.diagram;
-        diagram.startTransaction("Add Link");
-        // get the node data for which the user clicked the button
-        var fromNode = adorn.adornedPart;
-        var fromData = fromNode.data;
-        var toData = { text: "new" }; //????????
-        var model = diagram.model;
-        model.addNodeData(toData);
-        // create a link data from the old node data to the new node data
-        var linkdata = {};
-        linkdata[model.linkFromKeyProperty] = model.getKeyForNodeData(fromData);
-        linkdata[model.linkToKeyProperty] = model.getKeyForNodeData(toData);
-        // and add the link data to the model
-        model.addLinkData(linkdata);
-        // select the new Node
-        var newnode = diagram.findNodeForData(toData);
-        diagram.select(newnode);
-        diagram.commitTransaction("Add State");
-      }
-
-
-      //NEVER USED
-      function addLink (fromnode, typeRelationship, tool) {            
-        var diagram = fromnode.diagram;
-        var model = diagram.model;
-        var linkdata = model.copyLinkData({});
-        var tonode;
-        model.setDataProperty(linkdata, "relationship", typeRelationship);        
-        model.setFromKeyForLinkData(linkdata, model.getKeyForNodeData(fromnode.data));
-        model.setToKeyForLinkData(linkdata, model.getKeyForNodeData(tonode.data));
-        model.addLinkData(linkdata);         
-      }
-      
-    // used by both clickNewNode and dragNewNode to create a node and a link from a given node to the new node
     function createNodeAndLink(data, fromnode, relationship) {
       var diagram = fromnode.diagram;
       var model = diagram.model;
@@ -438,12 +359,10 @@
       model.setToKeyForLinkData(linkdata, model.getKeyForNodeData(newnode.data));
       model.setDataProperty(linkdata, "relationship", relationship);
       model.addLinkData(linkdata);  
-
       diagram.select(newnode);
       return newnode;
     }
 
-    // used by clickNewNodeWithoutLink to create a node
     function createNode(data, fromnode) {
       var diagram = fromnode.diagram;
       var model = diagram.model;
@@ -454,7 +373,6 @@
       return newnode;
     }
 
-    // the Button.click event handler, called when the user clicks the "N" button
     function clickNewNode(e, button) { 
       var data = button._dragData;
       if (!data) return;
@@ -465,24 +383,21 @@
       e.diagram.commitTransaction("Create Node and Link");
     }
 
-    // the Button.actionMove event handler, called when the user drags within the "N" button
     function dragNewNode(e, button) { 
       var tool = e.diagram.toolManager.draggingTool;
       if (tool.isBeyondDragSize()) {
         var data = button._dragData;
         if (!data) return;
-        e.diagram.startTransaction("button drag");  // see doDeactivate, below
+        e.diagram.startTransaction("button drag");  
         var newnode = createNodeAndLink(data, button.part.adornedPart, button._linkType); 
         newnode.location = e.diagram.lastInput.documentPoint;
-        // don't commitTransaction here, but in tool.doDeactivate, after drag operation finished
-        // set tool.currentPart to a selected movable Part and then activate the DraggingTool
+
         tool.currentPart = newnode;
         e.diagram.currentTool = tool;
         tool.doActivate();
       }
     }
 
-    // the Button.click event handler, called when the user clicks the "N" button
     function clickNewNodeWithoutLink(e, button) {
       var data = button._dragData; 
       if (!data) return;
@@ -493,19 +408,14 @@
       e.diagram.commitTransaction("Create Node");
     }
 
-    // using dragNewNode also requires modifying the standard DraggingTool so that it
-    // only calls commitTransaction when dragNewNode started a "button drag" transaction;
-    // do this by overriding DraggingTool.doDeactivate:
     var tool = myDiagram.toolManager.draggingTool;  
     tool.doDeactivate = function() { 
-      // commit "button drag" transaction, if it is ongoing; see dragNewNode, above
+
       if (tool.diagram.undoManager.nestedTransactionNames.elt(0) === "button drag") {
         tool.diagram.commitTransaction();
       }
-      go.DraggingTool.prototype.doDeactivate.call(tool);  // call the base method
+      go.DraggingTool.prototype.doDeactivate.call(tool);  
     };
-
-    //end -> added buttons -- PFV
 
     function convertIsTreeLink(r) {
       return r === "generalization";
@@ -563,31 +473,7 @@
 <body onload="init()">
 <div id="sample">
   <h3>UML Class Diagram</h3>
-  <div id="myDiagramDiv" style="border: solid 3px black; width:100%; height:600px"> </div>  
-  <br>
-  Salvar diagrama em json: &nbsp;<button type="button" onClick="saveModel()">Salvar json</button> 
-  <br> 
-    
-  <div class="alinhar"> 
-    Selecionar arquivo json para carregar: &nbsp;<input type="file" id="files" name="files"/> &nbsp; 
-    <button type="button" onclick="readingFile()"> Gerar Modelo </button>
-  </div>    
- 
-
-<!-- 
-  <div id="Sucesso" class="container">
-    <div class="alert alert-success fade in">
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <strong>Success!</strong> Your diagram was saved!
-    </div>
-  </div>
-  <div id="dialog-message" title="Download complete">
-    <p>
-      <span class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
-      Your file have downloaded successfully!
-    </p>
-  </div>
--->   
+  <div id="myDiagramDiv" style="border: solid 3px black; width:100%; height:600px"> </div>   
     <br>
     <p>
        Symbol prefixes indicate the visibility of methods and properties. The three possibilities are:
@@ -600,7 +486,7 @@
     </p>
 </div>
 <h3>UML Class Diagram</h3>
-<button onclick="generateCode()">Generate Code</button>
+<button onclick="generateCodeWrapper()">Generate Code</button>
 
 <h4>Generated Code</h4>
 <div>
@@ -618,70 +504,9 @@
 
 <script>
 
-/* 
-document.getElementById("Sucesso").style.visibility="hidden";
-document.getElementById("dialog-message").style.visibility="hidden";
-*/ 
-
-//var leitorDeJson = new FileReader()
-//leitorDeJson.onload = readJSON;
-
-function saveModel() {
-  var modelAsText = myDiagram.model.toJson();
-  console.log(modelAsText);
-  var blob = new Blob([modelAsText], {type: "text/plain;charset=utf-8"});
-  saveAs(blob, "umlDiagram.json")
-};
-
-function loadModel(modelAsText) {
-  console.log("Executando loadModel. STR: " + modelAsText);
-  myDiagram.model = go.Model.fromJson(modelAsText);
-  alert("JSON carregado com sucesso!");
-}
-
-function readingFile(){
-  event.preventDefault(); 
-  var file = document.getElementById('files').files[0];
-  alert("Arquivo selecionado: " + file.name);
-  if (file) {
-    getAsText(file);
-  }
-}
-
-function getAsText(readFile) {
-  var reader = new FileReader;
-  reader.readAsText(readFile, "UTF-8");
-  reader.onprogress = updateProgress;
-  reader.onload = loaded;
-  reader.onerror = errorHandler;
-}
-
-function updateProgress(evt) {
-  if (evt.lengthComputable) {
-    // evt.loaded and evt.total are ProgressEvent properties
-    var loaded = (evt.loaded / evt.total);
-    if (loaded < 1) {
-      // Increase the prog bar length
-      // style.width = (loaded * 200) + "px";
-    }
-  }
-}
-
-function loaded(evt) {
-  // Obtain the read file data
-  var fileString = evt.target.result;
-  loadModel(fileString);
-}
-
-function errorHandler(evt) {
-  if(evt.target.error.name == "NotReadableError") {
-    // The file could not be read
-  }
-}
 function generateCode() {
       const data = myDiagram.model.nodeDataArray;
       const output = { java: "", php: "", python: "" };
-
       data.forEach((node) => {
         const className = node.name || "UnnamedClass";
         const properties = node.properties.map(p => p.name).join("\n");
@@ -697,22 +522,193 @@ function generateCode() {
       document.getElementById("pythonCode").innerText = output.python;
       console.log(myDiagram.model.toJson());
     }
-</script>
 
+    function generateClassCode(umlModel) {
 
-<!-- 
- if() {    
+  const capitalize = (str) => (str && typeof str === 'string' ? str.charAt(0).toUpperCase() + str.slice(1) : 'UnnamedClass');
 
-    document.getElementById("Sucesso").style.visibility="visible";
-    $(function() {
-      $( "#dialog-message" ).dialog({
-        modal: true,
-        buttons: {
-          Ok: function() {
-            $(this).dialog( "close" );
-          }
-        }
+  const visibilityMap = {
+    public: {
+      java: 'public ',
+      php: 'public ',
+      python: '' 
+    },
+    private: {
+      java: 'private ',
+      php: 'private ',
+      python: '__' 
+    }
+  };
+
+  const typeMap = {
+    java: {
+      int: 'int',
+      String: 'String',
+      boolean: 'boolean',
+      type: 'Object',
+      typePar: 'Object'
+    },
+    php: {
+      int: 'int',
+      String: 'string',
+      boolean: 'bool',
+      type: 'mixed',
+      typePar: 'mixed'
+    },
+    python: {
+      int: 'int',
+      String: 'str',
+      boolean: 'bool',
+      type: 'object',
+      typePar: 'object'
+    }
+  };
+
+  function generateLanguageClasses(language) {
+    const classes = {};
+    const relationshipMap = {};
+
+    umlModel.linkDataArray.forEach((link) => {
+      const fromClass = umlModel.nodeDataArray.find((node) => node.key === link.from);
+      const toClass = umlModel.nodeDataArray.find((node) => node.key === link.to);
+
+      if (!fromClass || !toClass) return; 
+
+      if (!relationshipMap[fromClass.name]) relationshipMap[fromClass.name] = [];
+      if (!relationshipMap[toClass.name]) relationshipMap[toClass.name] = [];
+
+      relationshipMap[toClass.name].push({
+        type: link.relationship,
+        sourceClass: fromClass.name
+      });
+
+      relationshipMap[fromClass.name].push({
+        type: link.relationship,
+        targetClass: toClass.name
       });
     });
+
+    umlModel.nodeDataArray.forEach((classData) => {
+      if (!classData.name) {
+        console.warn('Skipping node with missing name:', classData);
+        return;
+      }
+
+      const className = capitalize(classData.name);
+      const relationships = relationshipMap[classData.name] || [];
+      let classCode = '';
+
+      switch (language) {
+        case 'java':
+          classCode += `public class ${className}`;
+          const javaParentClass = relationships.find((r) => r.type === 'generalization');
+          if (javaParentClass) classCode += ` extends ${capitalize(javaParentClass.sourceClass)}`;
+          classCode += ' {\n';
+          break;
+
+        case 'php':
+          classCode += `class ${className}`;
+          const phpParentClass = relationships.find((r) => r.type === 'generalization');
+          if (phpParentClass) classCode += ` extends ${capitalize(phpParentClass.sourceClass)}`;
+          classCode += ' {\n';
+          break;
+
+        case 'python':
+          classCode += `class ${className}`;
+          const pythonParentClass = relationships.find((r) => r.type === 'generalization');
+          classCode += pythonParentClass ? `(${capitalize(pythonParentClass.sourceClass)})` : '(object)';
+          classCode += ':\n';
+          break;
+
+        default:
+          console.error(`Unsupported language: ${language}`);
+          return;
+      }
+
+      if (classData.properties && classData.properties.length > 0) {
+        classData.properties.forEach((prop) => {
+          const visibility = visibilityMap[prop.visibility]?.[language] || '';
+          const type = typeMap[language]?.[prop.type] || 'Object';
+
+          switch (language) {
+            case 'java':
+              classCode += `    ${visibility}${type} ${prop.name};\n`;
+              break;
+            case 'php':
+              classCode += `    ${visibility}$${prop.name};\n`;
+              break;
+            case 'python':
+              classCode += `    def __init__(self):\n        self.${prop.name} = None\n`;
+              break;
+          }
+        });
+      }
+
+      if (classData.methods && classData.methods.length > 0) {
+        classData.methods.forEach((method) => {
+          const visibility = visibilityMap[method.visibility]?.[language] || '';
+          const methodName = method.name;
+
+          switch (language) {
+            case 'java':
+              classCode += `    ${visibility}void ${methodName}(`;
+              classCode += method.parameters.map((p) => `${typeMap[language]?.[p.type] || 'Object'} ${p.name}`).join(', ');
+              classCode += ') {\n        // TODO: Implement method\n    }\n';
+              break;
+
+            case 'php':
+              classCode += `    ${visibility}function ${methodName}(`;
+              classCode += method.parameters.map((p) => `$${p.name}`).join(', ');
+              classCode += ') {\n        // TODO: Implement method\n    }\n';
+              break;
+
+            case 'python':
+              classCode += `    def ${methodName}(self, `;
+              classCode += method.parameters.map((p) => `${p.name}`).join(', ');
+              classCode += '):\n        # TODO: Implement method\n        pass\n';
+              break;
+          }
+        });
+      }
+
+      switch (language) {
+        case 'java':
+        case 'php':
+          classCode += '}\n\n';
+          break;
+        case 'python':
+          classCode += '\n';
+          break;
+      }
+
+      classes[className] = classCode;
+    });
+
+    return classes;
   }
-  -->
+
+  return {
+    java: generateLanguageClasses('java'),
+    php: generateLanguageClasses('php'),
+    python: generateLanguageClasses('python')
+  };
+}
+
+function generateCodeWrapper(){
+  const generatedCode = generateClassCode(myDiagram.model);
+
+  console.log("Java Classes:");
+  Object.values(generatedCode.java).forEach(classCode => console.log(classCode));
+
+  console.log("\nPHP Classes:");
+  Object.values(generatedCode.php).forEach(classCode => console.log(classCode));
+
+  console.log("\nPython Classes:");
+  Object.values(generatedCode.python).forEach(classCode => console.log(classCode));
+
+  document.getElementById("javaCode").innerText = Object.values(generatedCode.java);
+  document.getElementById("phpCode").innerText = Object.values(generatedCode.php);
+  document.getElementById("pythonCode").innerText = Object.values(generatedCode.python);
+}
+
+</script>
